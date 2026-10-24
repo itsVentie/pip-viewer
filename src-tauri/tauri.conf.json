@@ -1,18 +1,23 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "tauri-app",
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "pip-viewer",
   "version": "0.1.0",
-  "identifier": "com.user.tauri-app",
+  "identifier": "com.pip-viewer.app",
   "build": {
-    "frontendDist": "../src"
+    "beforeDevCommand": "bun run dev",
+    "beforeBuildCommand": "bun run build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../dist"
   },
   "app": {
-    "withGlobalTauri": true,
     "windows": [
       {
-        "title": "tauri-app",
-        "width": 800,
-        "height": 600
+        "title": "PiP Viewer",
+        "width": 480,
+        "height": 270,
+        "alwaysOnTop": true,
+        "decorations": true,
+        "transparent": false
       }
     ],
     "security": {
@@ -26,8 +31,8 @@
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
+      "icons/icon.ico",
+      "icons/icon.icns"
     ]
   }
 }
