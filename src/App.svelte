@@ -2,6 +2,7 @@
   import TopBar from './components/TopBar.svelte';
   import Player from './components/Player.svelte';
   import Settings from './components/Settings.svelte';
+  import { onMount } from 'svelte';
 
   let url = $state('');
   let embedUrl = $state('');
@@ -9,15 +10,31 @@
   let showSettings = $state(false);
   let windowOpacity = $state(1.0);
 
+  onMount(() => {
+    const savedUrl = localStorage.getItem('pip_last_url');
+    if (savedUrl) {
+      url = savedUrl;
+      loadVideo();
+    }
+
+    const savedOpacity = localStorage.getItem('pip_opacity');
+    if (savedOpacity) {
+      windowOpacity = parseFloat(savedOpacity);
+      document.documentElement.style.setProperty('--app-opacity', windowOpacity);
+    }
+  });
+
   function loadVideo() {
     if (!url) return;
     let trimmed = url.trim();
+    localStorage.setItem('pip_last_url', trimmed);
 
     if (trimmed.includes('youtube.com/watch?v=')) {
       const id = trimmed.split('v=')[1]?.split('&')[0];
       embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1`;
     } else if (trimmed.includes('youtu.be/')) {
-      const id = trimmed.split('youtu.be/')[1]?.split('?')[0];
+      const parts = trimmed.split('youtu.be/')[1]?.split('?')[0];
+      const id = parts?.split('/')[0];
       embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1`;
     } else if (trimmed.includes('twitch.tv/')) {
       const channel = trimmed.split('twitch.tv/')[1]?.split('/')[0];
@@ -52,6 +69,7 @@
       onOpacityChange={(e) => {
         windowOpacity = parseFloat(e.target.value);
         document.documentElement.style.setProperty('--app-opacity', windowOpacity);
+        localStorage.setItem('pip_opacity', windowOpacity);
       }}
     />
   {/if}

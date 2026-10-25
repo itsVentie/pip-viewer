@@ -4,6 +4,22 @@
   import settingsIcon from '../assets/settings.svg';
 
   let { url = $bindable(''), onPlay, onToggleControls, onOpenSettings } = $props();
+
+  async function handleFocus() {
+    if (!url) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const clipText = await navigator.clipboard.readText();
+          if (clipText && clipText.trim().length > 0) {
+            url = clipText.trim();
+            onPlay();
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
 </script>
 
 <div class="top-bar" data-tauri-drag-region>
@@ -11,6 +27,7 @@
     type="text" 
     bind:value={url} 
     placeholder="Paste YouTube, Twitch or video URL..." 
+    onfocus={handleFocus}
     onkeydown={(e) => e.key === 'Enter' && onPlay()}
   />
   
