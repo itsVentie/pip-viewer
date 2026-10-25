@@ -2,7 +2,8 @@
   import TopBar from './components/TopBar.svelte';
   import Player from './components/Player.svelte';
   import Settings from './components/Settings.svelte';
-  import { onMount } from 'svelte';
+  import { DEFAULT_PRESET_URL } from './constants/presets.js';
+  import { onMount, onDestroy } from 'svelte';
 
   let url = $state('');
   let embedUrl = $state('');
@@ -10,18 +11,32 @@
   let showSettings = $state(false);
   let windowOpacity = $state(1.0);
 
+  function handleKeyDown(e) {
+    if (e.altKey && e.shiftKey && e.code === 'KeyH') {
+      showControls = !showControls;
+    }
+  }
+
   onMount(() => {
     const savedUrl = localStorage.getItem('pip_last_url');
     if (savedUrl) {
       url = savedUrl;
-      loadVideo();
+    } else {
+      url = DEFAULT_PRESET_URL;
     }
+    loadVideo();
 
     const savedOpacity = localStorage.getItem('pip_opacity');
     if (savedOpacity) {
       windowOpacity = parseFloat(savedOpacity);
       document.documentElement.style.setProperty('--app-opacity', windowOpacity);
     }
+
+    window.addEventListener('keydown', handleKeyDown);
+  });
+
+  onDestroy(() => {
+    window.removeEventListener('keydown', handleKeyDown);
   });
 
   function loadVideo() {
