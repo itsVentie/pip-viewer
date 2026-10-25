@@ -2,6 +2,8 @@
   import playIcon from '../assets/play.svg';
   import eyeIcon from '../assets/eye-closed.svg';
   import settingsIcon from '../assets/settings.svg';
+  import xIcon from '../assets/x.svg';
+  import { invoke } from '@tauri-apps/api/core';
 
   let { url = $bindable(''), onPlay, onToggleControls, onOpenSettings } = $props();
   
@@ -74,6 +76,14 @@
     showHistory = false;
     addAndPlay();
   }
+
+  async function handleCloseApp() {
+    try {
+      await invoke('quit_app');
+    } catch (e) {
+      console.error(e);
+    }
+  }
 </script>
 
 <div class="top-bar-container">
@@ -116,6 +126,10 @@
     
     <button class="icon-btn" onclick={onOpenSettings} title="Settings">
       <img src={settingsIcon} alt="Settings" class="icon" />
+    </button>
+
+    <button class="icon-btn close-app-btn" onclick={handleCloseApp} title="Exit application">
+      <img src={xIcon} alt="Exit" class="icon" />
     </button>
   </div>
 </div>
@@ -246,6 +260,11 @@
   .icon-btn:hover {
     background: #3a3a3a;
     border-color: #555;
+  }
+
+  .close-app-btn:hover {
+    background: #ef4444;
+    border-color: #ef4444;
   }
 
   .icon {
