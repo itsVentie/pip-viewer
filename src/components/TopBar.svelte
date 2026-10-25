@@ -19,14 +19,29 @@
     }
   });
 
+  function getVideoMeta(link) {
+    let thumb = '';
+    let title = link;
+
+    if (link.includes('youtube.com/watch?v=')) {
+      const id = link.split('v=')[1]?.split('&')[0];
+      if (id) thumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+    } else if (link.includes('youtu.be/')) {
+      const parts = link.split('youtu.be/')[1]?.split('?')[0];
+      const id = parts?.split('/')[0];
+      if (id) thumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+    }
+
+    return { thumb, title };
+  }
+
   async function handleFocus() {
     showHistory = true;
     if (!url) {
       try {
         if (navigator.clipboard && navigator.clipboard.readText) {
           const clipText = (await navigator.clipboard.readText()).trim();
-          // Проверяем, что в буфере именно ссылка (начинается с http/https)
-          if (clipText && /^https?:\/\/.+/i.test(clipText)) {
+          if (clipText && /^https?:\/\/[^\s]+$/.test(clipText)) {
             url = clipText;
             addAndPlay();
           }
@@ -41,8 +56,7 @@
     if (!url.trim()) return;
     const trimmed = url.trim();
     
-    // Сохраняем в историю и пускаем только если это валидная ссылка
-    if (!/^https?:\/\/.+/i.test(trimmed)) {
+    if (!/^https?:\/\/[^\s]+$/.test(trimmed)) {
       onPlay();
       return;
     }
@@ -77,8 +91,14 @@
       {#if showHistory && history.length > 0}
         <div class="history-dropdown">
           {#each history as item}
+            {@const meta = getVideoMeta(item)}
             <div class="history-item" onmousedown={() => selectHistoryItem(item)}>
-              {item}
+              {#if meta.thumb}
+                <img src={meta.thumb} alt="thumb" class="item-thumb" />
+              {:else}
+                <div class="item-thumb-placeholder">🔗</div>
+              {/if}
+              <span class="item-url" title={item}>{item}</span>
             </div>
           {/each}
         </div>
@@ -146,25 +166,56 @@
     background: #1f1f1f;
     border: 1px solid #444;
     border-radius: 4px;
-    max-height: 150px;
+    max-height: 220px;
     overflow-y: auto;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
     z-index: 1000;
   }
 
   .history-item {
-    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
     font-size: 12px;
     color: #ccc;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     cursor: pointer;
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  .history-item:last-child {
+    border-bottom: none;
   }
 
   .history-item:hover {
     background: #2a2a2a;
     color: #fff;
+  }
+
+  .item-thumb {
+    width: 48px;
+    height: 27px;
+    object-fit: cover;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .item-thumb-placeholder {
+    width: 48px;
+    height: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #333;
+    border-radius: 3px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .item-url {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .play-btn {
