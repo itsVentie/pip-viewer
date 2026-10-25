@@ -3,7 +3,7 @@
   import eyeIcon from '../assets/eye-closed.svg';
   import settingsIcon from '../assets/settings.svg';
 
-  let { url = $bindable(''), onPlay, onToggleControls } = $props();
+  let { url = $bindable(''), onPlay, onToggleControls, onOpenSettings } = $props();
 </script>
 
 <div class="top-bar" data-tauri-drag-region>
@@ -22,7 +22,7 @@
     <img src={eyeIcon} alt="Hide controls" class="icon" />
   </button>
   
-  <button class="icon-btn" title="Settings">
+  <button class="icon-btn" onclick={onOpenSettings} title="Settings">
     <img src={settingsIcon} alt="Settings" class="icon" />
   </button>
 </div>

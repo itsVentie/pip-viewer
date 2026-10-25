@@ -1,10 +1,13 @@
 <script>
   import TopBar from './components/TopBar.svelte';
   import Player from './components/Player.svelte';
+  import Settings from './components/Settings.svelte';
 
   let url = $state('');
   let embedUrl = $state('');
   let showControls = $state(true);
+  let showSettings = $state(false);
+  let windowOpacity = $state(1.0);
 
   function loadVideo() {
     if (!url) return;
@@ -30,12 +33,28 @@
   }
 </script>
 
-<main>
+<main style="opacity: var(--app-opacity, 1);">
   {#if showControls}
-    <TopBar bind:url onPlay={loadVideo} onToggleControls={toggleControls} />
+    <TopBar 
+      bind:url 
+      onPlay={loadVideo} 
+      onToggleControls={toggleControls} 
+      onOpenSettings={() => showSettings = true} 
+    />
   {/if}
 
   <Player {embedUrl} {showControls} onToggleControls={toggleControls} />
+
+  {#if showSettings}
+    <Settings 
+      onClose={() => showSettings = false} 
+      {windowOpacity} 
+      onOpacityChange={(e) => {
+        windowOpacity = parseFloat(e.target.value);
+        document.documentElement.style.setProperty('--app-opacity', windowOpacity);
+      }}
+    />
+  {/if}
 </main>
 
 <style>
@@ -54,5 +73,6 @@
     height: 100vh;
     width: 100vw;
     box-sizing: border-box;
+    position: relative;
   }
 </style>
