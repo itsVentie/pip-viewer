@@ -92,6 +92,7 @@
         <div class="history-dropdown">
           {#each history as item}
             {@const meta = getVideoMeta(item)}
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
             <div class="history-item" onmousedown={() => selectHistoryItem(item)}>
               {#if meta.thumb}
                 <img src={meta.thumb} alt="thumb" class="item-thumb" />
