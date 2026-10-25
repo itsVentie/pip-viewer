@@ -20,9 +20,15 @@
       const newState = !alwaysOnTop;
       await win.setAlwaysOnTop(newState);
       alwaysOnTop = newState;
+      localStorage.setItem('pip_always_on_top', JSON.stringify(newState));
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const handleOpacityInput = (e) => {
+    onOpacityChange(e);
+    localStorage.setItem('pip_opacity', e.target.value);
   };
 </script>
 
@@ -50,7 +56,7 @@
           max="1.0" 
           step="0.05" 
           value={windowOpacity} 
-          oninput={onOpacityChange} 
+          oninput={handleOpacityInput} 
         />
       </div>
     </div>
